@@ -14,6 +14,9 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/apartment_structure/protos/Window.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/CorrugatedMetal.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/solids/protos/SolidBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/solids/protos/SolidRoundedBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/solids/protos/SolidPipe.proto"
 
 WorldInfo {
   info [
@@ -25,8 +28,8 @@ WorldInfo {
   basicTimeStep 10
 }
 DEF VIEWPOINT Viewpoint {
-  orientation 0.371798473269224 0.09604035274550682 -0.9233320886437298 2.7242616967395916
-  position 25.214359156115577 15.856733509777488 32.325223142416576
+  orientation 0.0024363107359964514 -0.9998263290402987 0.018476367278178515 4.812800145593103
+  position -8.116373218609109 1.4920558587757782 48.802556996092626
   follow "DiffDrive"
   ambientOcclusionRadius 1
 }
@@ -1597,4 +1600,32 @@ Wall {
 SolidBox {
   translation -5.71737 2.37376 0.6
   size 1 1 1
+}
+SolidPipe {
+  translation -7 7 0.55
+  name "pipe(1)"
+  height 1
+  radius 0.7
+}
+SolidBox {
+  translation 1.6 -9 1
+  name "box(2)"
+  size 0.5 0.5 1
+}
+SolidBox {
+  translation -2 7 0.5
+  rotation 0 0 1 -2.8318530717958623
+  name "box(1)"
+  size 1.3 0.8 1
+}
+SolidPipe {
+  translation -0.5 -5 0.5
+  height 1
+}
+SolidRoundedBox {
+  translation 0 1 0.5
+  size 1 0.6 1
+}
+Pedestrian {
+  translation 0 5 1.27
 }

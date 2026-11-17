@@ -5,13 +5,16 @@ import time
 
 import rclpy
 from geometry_msgs.msg import Twist
+from rclpy.parameter import Parameter
+
+from webots_simulation.diff_drive_odometry import DiffDriveOdometry
 
 
 class DiffDriveDriver:
     def init(self, webots_node, properties):
         self._radius = float(properties.get('wheelRadius', '0.10'))
         self._track = float(properties.get('wheelSeparation', '0.57'))
-        self._timeout = float(properties.get('cmdVelTimeout', '1.0'))
+        self._timeout = float(properties.get('cmdVelTimeout', '0.3'))
         if not all(math.isfinite(v) and v > 0 for v in
                    (self._radius, self._track, self._timeout)):
             raise ValueError('Wheel geometry and command timeout must be positive and finite')
@@ -25,7 +28,10 @@ class DiffDriveDriver:
         self._last_command = float('-inf')
         if not rclpy.ok():
             rclpy.init(args=None)
-        self._node = rclpy.create_node('diff_drive_driver')
+        self._node = rclpy.create_node(
+            'diff_drive_driver',
+            parameter_overrides=[Parameter('use_sim_time', value=True)])
+        self._odometry = DiffDriveOdometry(self._node, webots_node.robot, self._radius)
         self._subscription = self._node.create_subscription(
             Twist, 'cmd_vel', self._on_command, 1)
         # This host's teleop uses cmd_vel_nav; upstream teleop uses cmd_vel.
@@ -49,6 +55,7 @@ class DiffDriveDriver:
 
     def step(self):
         rclpy.spin_once(self._node, timeout_sec=0)
+        self._odometry.step()
         target = self._target
         if time.monotonic() - self._last_command >= self._timeout:
             target = (0.0, 0.0)

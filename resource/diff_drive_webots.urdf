@@ -1,10 +1,77 @@
 <?xml version="1.0"?>
 <robot name="DiffDrive">
   <webots>
+    <!-- Native sensor throttling compares floating-point periods strictly.
+         A tiny rate margin avoids skipping a 10 ms step at the 50 ms boundary;
+         hardware sampling remains 50 ms (20 Hz). -->
+    <!-- GPS is world-coordinate ground truth for validation, not odometry. -->
+    <device reference="gps">
+      <ros>
+        <topicName>/gps</topicName>
+        <frameName>world</frameName>
+        <updateRate>20.000001</updateRate>
+        <alwaysOn>true</alwaysOn>
+      </ros>
+    </device>
+    <device reference="base_laser">
+      <ros>
+        <topicName>/DiffDrive/base_laser</topicName>
+        <frameName>base_laser</frameName>
+        <updateRate>20.000001</updateRate>
+        <alwaysOn>true</alwaysOn>
+      </ros>
+    </device>
+    <plugin type="webots_ros2_driver::Ros2IMU">
+      <topicName>/imu</topicName>
+      <frameName>imu_link</frameName>
+      <!-- No extra throttling: publish at every 10 ms physics step (100 Hz). -->
+      <alwaysOn>true</alwaysOn>
+      <inertialUnitName>imu_sensor</inertialUnitName>
+      <gyroName>gyro</gyroName>
+      <accelerometerName>accelerometer</accelerometerName>
+    </plugin>
     <plugin type="webots_simulation.diff_drive_driver.DiffDriveDriver">
       <wheelRadius>0.10</wheelRadius>
       <wheelSeparation>0.57</wheelSeparation>
-      <cmdVelTimeout>1.0</cmdVelTimeout>
+      <cmdVelTimeout>0.3</cmdVelTimeout>
     </plugin>
   </webots>
+
+  <!-- Visuals match DiffDriveRobot.proto; Webots owns simulation physics. -->
+  <link name="base_footprint"/>
+  <link name="base_link">
+    <visual name="body">
+      <geometry><mesh filename="package://webots_simulation/resource/meshes/demo.obj"/></geometry>
+    </visual>
+    <!-- Embedded materials avoid RViz Jazzy sharing the first visual's material. -->
+    <visual name="base_details">
+      <geometry><mesh filename="package://webots_simulation/resource/meshes/base_details.obj"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.116"/>
+      <geometry><box size="0.668 0.668 0.233"/></geometry>
+    </collision>
+  </link>
+  <link name="base_laser">
+    <visual name="lidar">
+      <geometry><mesh filename="package://webots_simulation/resource/meshes/lidar.obj"/></geometry>
+    </visual>
+  </link>
+  <link name="imu_link"/>
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.051" rpy="0 0 0"/>
+  </joint>
+  <joint name="base_link_to_base_laser" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_laser"/>
+    <origin xyz="0 0 0.34" rpy="0 0 0"/>
+  </joint>
+  <!-- The new IMU is at the Robot origin and aligned with its axes. -->
+  <joint name="base_link_to_imu_link" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 -0.051" rpy="0 0 0"/>
+  </joint>
 </robot>

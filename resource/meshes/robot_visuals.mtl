@@ -1,0 +1,43 @@
+# Mesh materials are explicit because RViz Jazzy preserves Assimp OBJ materials.
+newmtl body
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 25
+illum 2
+map_Kd ../textures/base_color.jpg
+
+newmtl lidar_label
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+illum 2
+map_Kd ../textures/velodyne.png
+
+newmtl tire
+Ka 0.04 0.04 0.04
+Kd 0.04 0.04 0.04
+Ks 0 0 0
+Ns 1
+illum 2
+
+newmtl support
+Ka 0.5 0.5 0.5
+Kd 0.5 0.5 0.5
+Ks 0.25 0.25 0.25
+Ns 50
+illum 2
+
+newmtl metal
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 0.2 0.2 0.2
+Ns 30
+illum 2
+
+newmtl glass
+Ka 0.0470588 0.0470588 0.0470588
+Kd 0.0470588 0.0470588 0.0470588
+Ks 0.35 0.35 0.35
+Ns 100
+illum 2

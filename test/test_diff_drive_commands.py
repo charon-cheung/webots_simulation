@@ -27,8 +27,10 @@ def base(monkeypatch):
         get_logger=lambda: SimpleNamespace(info=lambda text: None),
     )
     monkeypatch.setattr(module.rclpy, 'ok', lambda: True)
-    monkeypatch.setattr(module.rclpy, 'create_node', lambda name: node)
+    monkeypatch.setattr(module.rclpy, 'create_node', lambda name, **kwargs: node)
     monkeypatch.setattr(module.rclpy, 'spin_once', lambda *args, **kwargs: None)
+    monkeypatch.setattr(module, 'DiffDriveOdometry',
+                        lambda *args: SimpleNamespace(step=lambda: None))
     clock = [100.0]
     monkeypatch.setattr(module.time, 'monotonic', lambda: clock[0])
     driver = module.DiffDriveDriver()
@@ -69,7 +71,10 @@ def test_stop_lateral_input_and_missing_commands(base):
     assert send() == (0.0, 0.0)
     assert send(y=0.3) == (0.0, 0.0)
     send(0.3)
-    clock[0] += 1.01
+    clock[0] += 0.29
+    driver.step()
+    assert all(motor.velocity == pytest.approx(3.0) for motor in motors.values())
+    clock[0] += 0.02
     driver.step()
     assert all(motor.velocity == 0.0 for motor in motors.values())
     assert send(-0.3) == pytest.approx((-3.0, -3.0))
