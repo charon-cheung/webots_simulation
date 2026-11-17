@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="DiffDrive">
+  <webots>
+    <plugin type="webots_simulation.diff_drive_driver.DiffDriveDriver">
+      <wheelRadius>0.10</wheelRadius>
+      <wheelSeparation>0.57</wheelSeparation>
+      <cmdVelTimeout>1.0</cmdVelTimeout>
+    </plugin>
+  </webots>
+</robot>

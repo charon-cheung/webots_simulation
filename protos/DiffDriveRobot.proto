@@ -1,0 +1,294 @@
+#VRML_SIM R2025a utf8
+
+# X forward, Y left, Z up; translation is the ground projection of the axle.
+# PR2 body envelope: 0.668 x 0.668 m. Wheel radius: 0.10 m; track: 0.57 m.
+# Passive ball supports are freely rotating, not additional drive wheels.
+PROTO DiffDriveRobot [
+  field SFVec3f translation 0 0 0
+  field SFRotation rotation 0 0 1 0
+  field SFString name "DiffDrive"
+  field SFString controller "<none>"
+  field SFBool supervisor FALSE
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    controller IS controller
+    supervisor IS supervisor
+    children [
+      # Same body mesh, texture and mounting height as webots_ros2_demo.
+      Pose {
+        translation 0 0 0.051
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColorMap ImageTexture {
+                url [ "../resource/textures/base_color.jpg" ]
+              }
+              roughness 0.5
+              metalness 0
+            }
+            geometry Mesh {
+              url [ "../resource/meshes/demo.obj" ]
+            }
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 0.318
+        children [
+          Shape {
+            appearance DEF LIDAR_METAL PBRAppearance {
+              baseColor 0.6 0.6 0.6
+              roughness 0.5
+            }
+            geometry Cylinder {
+              height 0.0697
+              radius 0.0517
+              subdivision 24
+            }
+          }
+        ]
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor 0 0.285 0.10
+          dampingConstant 0.01
+        }
+        device [
+          RotationalMotor {
+            name "left_wheel_motor"
+            maxVelocity 12
+            maxTorque 20
+          }
+          PositionSensor {
+            name "left_wheel_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0 0.285 0.10
+          rotation 1 0 0 1.57079632679
+          name "left_wheel"
+          children [
+            Shape {
+              appearance DEF TIRE PBRAppearance {
+                baseColor 0.04 0.04 0.04
+                roughness 1
+                metalness 0
+              }
+              geometry DEF WHEEL Cylinder {
+                height 0.06
+                radius 0.10
+              }
+            }
+          ]
+          boundingObject USE WHEEL
+          physics Physics {
+            density -1
+            mass 1
+          }
+        }
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor 0 -0.285 0.10
+          dampingConstant 0.01
+        }
+        device [
+          RotationalMotor {
+            name "right_wheel_motor"
+            maxVelocity 12
+            maxTorque 20
+          }
+          PositionSensor {
+            name "right_wheel_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0 -0.285 0.10
+          rotation 1 0 0 1.57079632679
+          name "right_wheel"
+          children [
+            Shape {
+              appearance USE TIRE
+              geometry USE WHEEL
+            }
+          ]
+          boundingObject USE WHEEL
+          physics Physics {
+            density -1
+            mass 1
+          }
+        }
+      }
+      BallJoint {
+        jointParameters BallJointParameters {
+          anchor 0.25 0 0.035
+        }
+        endPoint Solid {
+          translation 0.25 0 0.035
+          name "front_ball_support"
+          children [
+            Shape {
+              appearance DEF SUPPORT PBRAppearance {
+                baseColor 0.5 0.5 0.5
+                roughness 0.3
+              }
+              geometry DEF BALL Sphere {
+                radius 0.035
+              }
+            }
+          ]
+          boundingObject USE BALL
+          physics Physics {
+            density -1
+            mass 0.2
+          }
+        }
+      }
+      BallJoint {
+        jointParameters BallJointParameters {
+          anchor -0.25 0 0.035
+        }
+        endPoint Solid {
+          translation -0.25 0 0.035
+          name "rear_ball_support"
+          children [
+            Shape {
+              appearance USE SUPPORT
+              geometry USE BALL
+            }
+          ]
+          boundingObject USE BALL
+          physics Physics {
+            density -1
+            mass 0.2
+          }
+        }
+      }
+      Lidar {
+        translation 0 0 0.391
+        name "base_laser"
+        model "Velodyne Puck"
+        children [
+          DEF BOTTOM Pose {
+            translation 0 0 -0.0286
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.6 0.6 0.6
+                  roughness 0.5
+                }
+                geometry Cylinder {
+                  height 0.0188
+                  radius 0.05165
+                  subdivision 24
+                }
+              }
+            ]
+          }
+          DEF LOGO Pose {
+            translation 0 0 -0.0286
+            rotation 0 0 1 1.5708
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColorMap ImageTexture {
+                    url [
+                      "../resource/textures/velodyne.png"
+                    ]
+                    repeatS FALSE
+                    repeatT FALSE
+                  }
+                  roughness 0.6
+                  metalness 0
+                  textureTransform TextureTransform {
+                    scale 4 1.5
+                    translation -0.38 -0.09
+                  }
+                }
+                geometry Cylinder {
+                  bottom FALSE
+                  height 0.0188
+                  radius 0.052
+                  top FALSE
+                  subdivision 24
+                }
+              }
+            ]
+          }
+          DEF GLASS Pose {
+            translation 0 0.0004 0
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.0470588 0.0470588 0.0470588
+                  roughness 0.1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.0392
+                  radius 0.05165
+                  subdivision 24
+                }
+              }
+            ]
+          }
+          DEF TOP Pose {
+            translation 0 0 0.0274
+            children [
+              Shape {
+                appearance USE LIDAR_METAL
+                geometry Cylinder {
+                  height 0.0147
+                  radius 0.05165
+                  subdivision 24
+                }
+              }
+            ]
+          }
+        ]
+        horizontalResolution 1920
+        fieldOfView 6.28318
+        verticalFieldOfView 0.5236
+        numberOfLayers 9
+        minRange 0.1
+        maxRange 6
+        noise 0.001
+        defaultFrequency 20
+        minFrequency 5
+        maxFrequency 20
+      }
+      GPS {
+        name "gps"
+      }
+      InertialUnit {
+        name "imu_sensor"
+      }
+      Gyro {
+        name "gyro"
+      }
+      Accelerometer {
+        name "accelerometer"
+      }
+    ]
+    # Enclose the reused body mesh, including its wider side panels.
+    boundingObject Pose {
+      translation 0 0 0.167
+      children [
+        Box {
+          size 0.668 0.668 0.233
+        }
+      ]
+    }
+    physics Physics {
+      density -1
+      mass 60
+      centerOfMass [0 0 0.20]
+    }
+  }
+}
