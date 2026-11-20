@@ -35,7 +35,7 @@ def launch_localization(context):
     handlers = [RegisterEventHandler(OnProcessExit(target_action=node, on_exit=shutdown_on_exit))
                 for node in nodes]
     if IfCondition(LaunchConfiguration('rviz')).evaluate(context):
-        config = Path.home() / 'configs' / 'sim.rviz'
+        config = Path(LaunchConfiguration('rviz_config').perform(context)).expanduser()
         if not config.is_file():
             raise FileNotFoundError(f'RViz configuration does not exist: {config}')
         nodes.append(Node(package='rviz2', executable='rviz2', name='rviz2_localization',
@@ -51,5 +51,6 @@ def generate_launch_description():
         DeclareLaunchArgument('params_file',
                               default_value=str(package / 'config' / 'localization_params.yaml')),
         DeclareLaunchArgument('rviz', default_value='true'),
+        DeclareLaunchArgument('rviz_config', default_value=str(Path.home() / 'configs' / 'sim.rviz')),
         OpaqueFunction(function=launch_localization),
     ])

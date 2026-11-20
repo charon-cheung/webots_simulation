@@ -18,10 +18,11 @@ def generate_launch_description():
                               default_value=str(package / 'config' / 'localization_params.yaml')),
         DeclareLaunchArgument('rendering', default_value='true'),
         DeclareLaunchArgument('rviz', default_value='true'),
+        DeclareLaunchArgument('rviz_config', default_value=str(Path.home() / 'configs' / 'diff.rviz')),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(str(package / 'launch' / 'localization_launch.py')),
             launch_arguments={name: LaunchConfiguration(name)
-                              for name in ('map', 'params_file', 'rviz')}.items(),
+                              for name in ('map', 'params_file', 'rviz', 'rviz_config')}.items(),
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(str(package / 'launch' / 'simulation_launch.py')),
